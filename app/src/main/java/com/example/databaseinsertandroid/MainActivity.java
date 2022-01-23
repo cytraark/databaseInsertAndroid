@@ -1,13 +1,13 @@
 package com.example.databaseinsertandroid;
 
-import android.os.AsyncTask;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.AsyncTask;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -17,17 +17,16 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity {
-    String ServerURL = "http://localhost/dataTable/get_data.php" ;
+
+    String ServerURL = "http://192.168.18.14/dataTable/get_data.php" ;
     EditText name, email ;
     Button button;
-    String tempname, tempemail ;
+    String TempName, TempEmail ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,24 +34,28 @@ public class MainActivity extends AppCompatActivity {
         name = findViewById(R.id.nameTextBox);
         email = findViewById(R.id.emailTextBox);
         button = findViewById(R.id.sendButton);
-        button.setOnClickListener(view -> { GetData(); InsertData(tempname, tempemail); });
+        button.setOnClickListener(view -> {
+            GetData();
+            InsertData(TempName, TempEmail);
+        });
     }
-    public void GetData(){
-        tempname = name.getText().toString();
-        tempemail = email.getText().toString();
+    public void GetData() {
+        TempName = name.getText().toString();
+        TempEmail = email.getText().toString();
     }
-    public void InsertData(final String name, final String email){
+    public void InsertData(final String name, final String email) {
         class SendPostReqAsyncTask extends AsyncTask<String, Void, String> {
             @Override
             protected String doInBackground(String... params) {
-                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
-                nameValuePairs.add(new BasicNameValuePair("name", name));
-                nameValuePairs.add(new BasicNameValuePair("email", email));
+                String NameHolder = name;
+                String EmailHolder = email;
+                List <NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+                nameValuePairs.add(new BasicNameValuePair("name", NameHolder));
+                nameValuePairs.add(new BasicNameValuePair("email", EmailHolder));
                 try {
                     HttpClient httpClient = new DefaultHttpClient();
                     HttpPost httpPost = new HttpPost(ServerURL);
-                    httpPost.setEntity(new
-                            UrlEncodedFormEntity(nameValuePairs));
+                    httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
                     HttpResponse httpResponse = httpClient.execute(httpPost);
                     HttpEntity httpEntity = httpResponse.getEntity();
                 } catch (ClientProtocolException e) {
@@ -63,12 +66,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Toast.makeText(MainActivity.this, "Data Submit Successfully",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Data Submit Successfully", Toast.LENGTH_LONG).show();
             }
         }
-        SendPostReqAsyncTask sendPostReqAsyncTask = new
-                SendPostReqAsyncTask();
+        SendPostReqAsyncTask sendPostReqAsyncTask = new SendPostReqAsyncTask();
         sendPostReqAsyncTask.execute(name, email);
     }
 }
