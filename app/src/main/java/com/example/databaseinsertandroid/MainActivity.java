@@ -1,12 +1,12 @@
 package com.example.databaseinsertandroid;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,47 +22,38 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("ALL")
 public class MainActivity extends AppCompatActivity {
-
     String ServerURL = "http://localhost/dataTable/get_data.php" ;
     EditText name, email ;
     Button button;
-    String TempName, TempEmail ;
+    String tempname, tempemail ;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        name = findViewById(R.id.editText2);
-        email = findViewById(R.id.editText3);
-        button = findViewById(R.id.button);
+        name = findViewById(R.id.nameTextBox);
+        email = findViewById(R.id.emailTextBox);
+        button = findViewById(R.id.sendButton);
+        button.setOnClickListener(view -> { GetData(); InsertData(tempname, tempemail); });
     }
-
     public void GetData(){
-        TempName = name.getText().toString();
-        TempEmail = email.getText().toString();
+        tempname = name.getText().toString();
+        tempemail = email.getText().toString();
     }
-
     public void InsertData(final String name, final String email){
-        class SendPostReqAsyncTask extends AsyncTask<String, Void,
-                        String> {
+        class SendPostReqAsyncTask extends AsyncTask<String, Void, String> {
             @Override
             protected String doInBackground(String... params) {
-                String NameHolder = name ;
-                String EmailHolder = email ;
-                List<NameValuePair> nameValuePairs = new
-                        ArrayList<NameValuePair>();
-                nameValuePairs.add(new BasicNameValuePair("name",
-                        NameHolder));
-                nameValuePairs.add(new BasicNameValuePair("email",
-                        EmailHolder));
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+                nameValuePairs.add(new BasicNameValuePair("name", name));
+                nameValuePairs.add(new BasicNameValuePair("email", email));
                 try {
                     HttpClient httpClient = new DefaultHttpClient();
                     HttpPost httpPost = new HttpPost(ServerURL);
                     httpPost.setEntity(new
                             UrlEncodedFormEntity(nameValuePairs));
-                    HttpResponse httpResponse =
-                            httpClient.execute(httpPost);
+                    HttpResponse httpResponse = httpClient.execute(httpPost);
                     HttpEntity httpEntity = httpResponse.getEntity();
                 } catch (ClientProtocolException e) {
                 } catch (IOException e) {
@@ -72,12 +63,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(String result) {
                 super.onPostExecute(result);
-                Toast.makeText(MainActivity.this, "Data Submit Successfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(MainActivity.this, "Data Submit Successfully",
+                        Toast.LENGTH_LONG).show();
             }
         }
         SendPostReqAsyncTask sendPostReqAsyncTask = new
                 SendPostReqAsyncTask();
         sendPostReqAsyncTask.execute(name, email);
     }
-
 }
