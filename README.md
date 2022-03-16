@@ -1,11 +1,3 @@
-Daftar Biodata Siswa
-==
-Daftar Siswa Dicoding
---
-*biodata siswa
+Database Insert Android Application
 
-- Angkatan 2020
-
-- Angkatan 2020
-
-- Angkatan 2020
+- A simple android application to send data to the database.
